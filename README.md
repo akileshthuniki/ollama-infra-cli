@@ -1,15 +1,15 @@
 # Ollama CLI Tool
 
-A command-line interface for interacting with local Ollama AI models. This tool provides a simple way to list available models and run prompts through them.
+A simple command-line tool I built to interact with local Ollama AI models. I got tired of switching between different interfaces, so I made this to keep everything in the terminal where I spend most of my time.
 
 ## Features
 
-- **List Models**: View all available Ollama models on your server
-- **Run Prompts**: Execute prompts through any available model
-- **Flexible Input**: Accept prompts via command line, stdin, or interactive input
-- **Auto Model Selection**: Automatically use the first available model if none specified
-- **Verbose Mode**: Option to view full JSON responses for debugging
-- **Error Handling**: Comprehensive error messages with helpful suggestions
+- **List Models**: See what models you have available (because I always forget what I've pulled)
+- **Run Prompts**: Send prompts to any model directly from the command line
+- **Flexible Input**: Works with command line args, pipes, or just ask you interactively
+- **Auto Model Selection**: Picks the first available model if you don't specify one (lazy but convenient)
+- **Verbose Mode**: Shows you the full JSON response when you're debugging
+- **Helpful Errors**: Actually tells you what went wrong and how to fix it
 
 ## Prerequisites
 
@@ -17,17 +17,18 @@ A command-line interface for interacting with local Ollama AI models. This tool 
 - [Ollama](https://ollama.ai/) installed and running
 - At least one model pulled (e.g., `ollama pull llama3.1`)
 
-## Installation
+## Getting started
 
-1. Clone or download this repository
-2. Install required dependencies:
+1. Download or clone this repo
+2. Install the one dependency:
    ```bash
    pip install -r requirements.txt
    ```
+   That's it! The requirements file is pretty minimal.
 
-## Usage
+## How to use it
 
-### List Available Models
+### See what models you have
 
 ```bash
 python cli.py list
@@ -35,7 +36,7 @@ python cli.py list
 
 This will show all models available on your Ollama server.
 
-### Run a Prompt
+### Ask something
 
 #### Command Line Input
 ```bash
@@ -45,13 +46,14 @@ python cli.py run "What is Python?"
 #### Interactive Input
 ```bash
 python cli.py run
-# Then enter your prompt when prompted
+# It'll prompt you for input
 ```
 
 #### Pipe Input
 ```bash
 echo "Explain machine learning" | python cli.py run
 ```
+This is actually pretty handy when you want to analyze files or other command outputs.
 
 ### Advanced Options
 
@@ -60,12 +62,12 @@ echo "Explain machine learning" | python cli.py run
 python cli.py run "What is Python?" --model llama3.1
 ```
 
-#### Use Different Server
+#### Use a different server
 ```bash
 python cli.py run "Hello" --base-url http://remote-server:11434
 ```
 
-#### Set Timeout
+#### Give it more time
 ```bash
 python cli.py run "Long prompt" --timeout 600
 ```
@@ -74,6 +76,7 @@ python cli.py run "Long prompt" --timeout 600
 ```bash
 python cli.py run "What is Python?" --verbose
 ```
+This shows you the full JSON response, which is useful when things aren't working as expected.
 
 ## Command Reference
 
@@ -124,7 +127,7 @@ The tool provides helpful error messages for common issues:
 - **Model Not Found**: "Model 'modelname' not found. Run 'list' or pull the model."
 - **Timeout**: "Request timed out after X seconds."
 
-## Examples
+The goal is to tell you what's wrong and how to fix it, not just throw an error at you.
 
 ### Basic Workflow
 ```bash
@@ -134,13 +137,13 @@ python cli.py list
 # 2. Run a simple prompt
 python cli.py run "What is machine learning?"
 
-# 3. Use a specific model
+# 3. Be specific about which model
 python cli.py run "Explain Python" --model llama3.1
 ```
 
 ### Advanced Usage
 ```bash
-# Pipe content from a file
+# Analyze a file
 cat my_questions.txt | python cli.py run
 
 # Use with different server
@@ -159,12 +162,12 @@ python cli.py run "Test" --verbose
    - Check if the server URL is correct
 
 2. **"No models found"**
-   - Pull a model: `ollama pull llama3.1`
-   - Check available models: `ollama list`
+   - You need to pull a model first: `ollama pull llama3.1`
+   - Or check what you have: `ollama list`
 
 3. **"Model not found"**
-   - List available models: `python cli.py list`
-   - Pull the specific model you need
+   - Check what models you actually have: `python cli.py list`
+   - Pull the model you want: `ollama pull model-name`
 
 4. **Request timeouts**
    - Increase timeout: `--timeout 600`
@@ -193,10 +196,4 @@ python cli.py run --help
 - `requests`: HTTP client for API calls
 - `argparse`: Command-line argument parsing
 
-## License
-
-This project is part of the Macmillan assignment.
-
-## Contributing
-
-This is an assignment project. For questions or issues, please refer to the assignment guidelines.
+The code is pretty straightforward if you want to poke around or modify it. The main logic is in `cli.py` and it's not too complicated.
