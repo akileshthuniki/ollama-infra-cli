@@ -4,12 +4,14 @@ A simple command-line tool I built to interact with local Ollama AI models. I go
 
 ## Features
 
-- **List Models**: See what models you have available (because I always forget what I've pulled)
-- **Run Prompts**: Send prompts to any model directly from the command line
-- **Flexible Input**: Works with command line args, pipes, or just ask you interactively
-- **Auto Model Selection**: Picks the first available model if you don't specify one (lazy but convenient)
-- **Verbose Mode**: Shows you the full JSON response when you're debugging
-- **Helpful Errors**: Actually tells you what went wrong and how to fix it
+- **Infrastructure Exploration**: Query your AWS infrastructure using natural language
+- **AI-Powered Insights**: Get detailed explanations about your deployed resources
+- **AWS Infrastructure Management**: Deploy and manage AWS resources using Terraform
+- **List Models**: View available Ollama models for infrastructure exploration
+- **Flexible Input**: Support for command-line args, pipes, and interactive mode
+- **Auto Model Selection**: Intelligent model selection for infrastructure queries
+- **Verbose Mode**: Detailed JSON responses for debugging
+- **Infrastructure as Code**: Complete Terraform configuration for AWS deployment
 
 ## Prerequisites
 
