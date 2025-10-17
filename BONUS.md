@@ -92,8 +92,8 @@ kubectl get pv,pvc -o yaml | python cli.py run "Review storage configuration and
 ### 1. **Direct kubectl Integration**
 ```bash
 # Add kubectl subcommand for seamless integration
-python cli.py kubectl logs my-pod | python cli.py analyze --context "pod-logs"
-python cli.py kubectl describe pod my-pod | python cli.py diagnose
+kubectl logs my-pod | python cli.py analyze --context "pod-logs"
+kubectl describe pod my-pod | python cli.py diagnose
 ```
 
 ### 2. **Kubernetes-Specific Models**
