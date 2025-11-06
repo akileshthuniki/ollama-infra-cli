@@ -52,7 +52,7 @@ This infrastructure provides a complete AWS-based containerized application plat
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Internet                              │
+│                        Internet                             │
 └──────────────────────────┬──────────────────────────────────┘
                             │
                             ▼
@@ -65,10 +65,10 @@ This infrastructure provides a complete AWS-based containerized application plat
 ┌─────────────────────────────────────────────────────────────┐
 │                    ECS Service (Fargate)                    │
 │              Private Subnet (Multi-AZ)                      │
-│  ┌──────────────────┐      ┌──────────────────┐            │
-│  │  Flask API       │◄────►│  Ollama (AI)     │            │
-│  │  Container       │      │  Container       │            │
-│  └──────────────────┘      └──────────────────┘            │
+│  ┌──────────────────┐      ┌──────────────────┐             │
+│  │  Flask API       │◄────►│  Ollama (AI)     │             │
+│  │  Container       │      │  Container       │             │
+│  └──────────────────┘      └──────────────────┘             │
 └──────────────────────────┬──────────────────────────────────┘
                             │
                             ▼
@@ -76,8 +76,8 @@ This infrastructure provides a complete AWS-based containerized application plat
 │                    VPC Endpoints                            │
 │  • ECR (Docker Registry)                                    │
 │  • CloudWatch Logs                                          │
-│  • SSM (Systems Manager)                                     │
-│  • S3 (Storage)                                              │
+│  • SSM (Systems Manager)                                    │
+│  • S3 (Storage)                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -346,7 +346,7 @@ enable_ecs_exec = true
 ### Available Modules
 
 | Module | Purpose | Key Resources |
-|-------|---------|---------------|
+|--------|---------|---------------|
 | **vpc** | Network infrastructure | VPC, Subnets, IGW, NAT Gateway, Route Tables |
 | **ecs-cluster** | Container orchestration | ECS Cluster with Container Insights |
 | **ecs-service** | Service definition | ECS Service, Task Definition |
@@ -741,29 +741,6 @@ deploy_infrastructure:
     - terraform apply -auto-approve -var-file=staging.tfvars
   only:
     - main
-```
-
-### Jenkins Pipeline
-
-```groovy
-pipeline {
-    agent any
-    
-    stages {
-        stage('Deploy Infrastructure') {
-            steps {
-                sh '''
-                    cd infra/environments/${ENV}
-                    terraform init
-                    terraform plan -var-file=${ENV}.tfvars
-                    terraform apply -auto-approve -var-file=${ENV}.tfvars
-                '''
-            }
-        }
-    }
-}
-```
-
 ---
 
 ## 📚 Additional Resources
