@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Issue Analyzer - Private AI-Powered Troubleshooting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .question-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .question-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .url-input:focus, .question-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .analyze-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .example-urls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .example-btn {
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border: 1px solid #dee0e6;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #e9ecef;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .result-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .result-section h3 {
+            margin-bottom: 15px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-success { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-error { background: #dc3545; }
+
+        .test-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .test-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #dee0e6;
+        }
+
+        .test-item.success {
+            border-left-color: #28a745;
+        }
+
+        .test-item.error {
+            border-left-color: #dc3545;
+        }
+
+        .test-item h4 {
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .test-item p {
+            margin: 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .ai-analysis {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #dee oe6;
+        }
+
+        .ai-analysis h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .ai-content {
+            line-height: 1.6;
+            white-space: pre-wrap;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee oe6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .metadata {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 20px;
+        }
+
+        .privacy-notice {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #bee5eb;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .url-input-group {
+                flex-direction: column;
+            }
+            
+            .test-results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 URL Issue Analyzer</h1>
+            <p>Private AI-powered troubleshooting for websites, load balancers, and Kubernetes endpoints</p>
+        </div>
+
+        <div class="main-card">
+            <div class="privacy-notice">
+                🔒 <strong>Privacy First:</strong> All analysis happens privately on your infrastructure. No data is shared with external services.
+            </div>
+
+            <div class="input-section">
+                <div class="url-input-group">
+                    <input 
+                        type="text" 
+                        id="urlInput" 
+                        class="url-input" 
+                        placeholder="Enter URL (e.g., https://your-alb.amazonaws.com or https://your-app.com)"
+                        autocomplete="url"
+                    >
+                    <button id="analyzeBtn" class="analyze-btn" onclick="analyzeURL()">
+                        🔍 Analyze Issues
+                    </button>
+                </div>
+                
+                <div class="question-input-group" style="margin-top: 20px;">
+                    <textarea 
+                        id="questionInput" 
+                        class="question-input" 
+                        placeholder="What do you want to know about this URL? (e.g., 'Why is my load balancer slow?', 'Is this secure?', 'How can I optimize performance?')"
+                        rows="3"
+                    ></textarea>
+                    <button id="customAnalyzeBtn" class="analyze-btn" onclick="analyzeWithCustomQuestion()" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                        🤖 Ask AI
+                    </button>
+                </div>
+                
+                <div class="example-urls">
+                    <span style="font-size: 12px; color: #6c757d;">Try examples:</span>
+                    <button class="example-btn" onclick="setURL('https://ollama-alb-427582956.us-east-1.elb.amazonaws.com')">AWS ALB</button>
+                    <button class="example-btn" onclick="setURL('https://kubernetes.default.svc.cluster.local')">Kubernetes</button>
+                    <button class="example-btn" onclick="setURL('https://google.com')">Website</button>
+                    <button class="example-btn" onclick="setURL('https://api.github.com')">API Endpoint</button>
+                </div>
+                
+                <div class="example-questions">
+                    <span style="font-size: 12px; color: #6c757d;">Example questions:</span>
+                    <button class="example-btn" onclick="setQuestion('Why is this endpoint slow?')">Performance Issue</button>
+                    <button class="example-btn" onclick="setQuestion('Is this configuration secure?')">Security Check</button>
+                    <button class="example-btn" onclick="setQuestion('What are the optimization opportunities?')">Optimization</button>
+                    <button class="example-btn" onclick="setQuestion('How can I improve reliability?')">Reliability</button>
+                    <button class="example-btn" onclick="setQuestion('What are the troubleshooting steps?')">Troubleshooting</button>
+                </div>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <h3>🔍 Analyzing URL...</h3>
+                <p>Running connectivity tests and AI analysis</p>
+            </div>
+
+            <div id="results" class="results">
+                <div id="errorDiv" class="error-message" style="display: none;"></div>
+                
+                <div class="result-section">
+                    <h3>
+                        <span class="status-indicator" id="overallStatus"></span>
+                        Connectivity Test Results
+                    </h3>
+                    <div id="testResults" class="test-results"></div>
+                </div>
+
+                <div class="result-section ai-analysis">
+                    <h3>🤖 AI-Powered Issue Analysis</h3>
+                    <div id="aiContent" class="ai-content"></div>
+                    <div id="aiMetadata" class="metadata"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setURL(url) {
+            document.getElementById('urlInput').value = url;
+        }
+
+        function setQuestion(question) {
+            document.getElementById('questionInput').value = question;
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('analyzeBtn').textContent = '⏳ Analyzing...';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('analyzeBtn').textContent = '🔍 Analyze Issues';
+            document.getElementById('customAnalyzeBtn').disabled = false;
+            document.getElementById('customAnalyzeBtn').textContent = '🤖 Ask AI';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorDiv');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorDiv').style.display = 'none';
+        }
+
+        function analyzeWithCustomQuestion() {
+            const url = document.getElementById('urlInput').value.trim();
+            const question = document.getElementById('questionInput').value.trim();
+            
+            if (!url) {
+                showError('Please enter a URL to analyze');
+                return;
+            }
+            
+            if (!question) {
+                showError('Please enter a question for the AI');
+                return;
+            }
+
+            showLoading();
+            document.getElementById('customAnalyzeBtn').disabled = true;
+            document.getElementById('customAnalyzeBtn').textContent = '⏳ Thinking...';
+
+            // Add scheme if missing
+            if (!url.startsWith(('http://', 'https://'))) {
+                url = 'https://' + url;
+            }
+
+            // Call API with custom question
+            analyzeURLWithQuestion(url, question);
+        }
+
+        function analyzeURLWithQuestion(url, question) {
+            fetch('/analyze-custom', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url, question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    displayCustomResults(data);
+                }
+            })
+            .catch(error => {
+                showError('Failed to connect to analysis service: ' + error.message);
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+
+        function createTestItem(title, status, details) {
+            const item = document.createElement('div');
+            item.className = `test-item ${status}`;
+            
+            const statusIcon = status === 'success' ? '✅' : '❌';
+            
+            item.innerHTML = `
+                <h4>${statusIcon} ${title}</h4>
+                <p>${details}</p>
+            `;
+            
+            return item;
+        }
+
+        function displayResults(data) {
+            hideError();
+            
+            const connectivity = data.connectivity;
+            const testResults = document.getElementById('testResults');
+            testResults.innerHTML = '';
+
+            // DNS Resolution
+            if (connectivity.dns_resolution) {
+                const dnsStatus = connectivity.dns_resolution.success ? 'success' : 'error';
+                const dnsDetails = connectivity.dns_resolution.success 
+                    ? `Resolved to ${connectivity.dns_resolution.ip_address}`
+                    : connectivity.dns_resolution.error;
+                testResults.appendChild(createTestItem('DNS Resolution', dnsStatus, dnsDetails));
+            }
+
+            // Port Connectivity
+            if (connectivity.connectivity_tests && connectivity.connectivity_tests.port) {
+                const portStatus = connectivity.connectivity_tests.port.success ? 'success' : 'error';
+                const portDetails = connectivity.connectivity_tests.port.success
+                    ? `Port ${connectivity.port} is open`
+                    : connectivity.connectivity_tests.port.error || 'Port is closed or blocked';
+                testResults.appendChild(createTestItem('Port Connectivity', portStatus, portDetails));
+            }
+
+            // SSL Certificate
+            if (connectivity.ssl_info) {
+                const sslStatus = connectivity.ssl_info.success ? 'success' : 'error';
+                const sslDetails = connectivity.ssl_info.success
+                    ? 'SSL certificate is valid'
+                    : connectivity.ssl_info.error;
+                testResults.appendChild(createTestItem('SSL Certificate', sslStatus, sslDetails));
+            }
+
+            // HTTP Status
+            if (connectivity.http_status) {
+                if (connectivity.http_status.status_code) {
+                    const statusCode = connectivity.http_status.status_code;
+                    const httpStatus = statusCode < 400 ? 'success' : 'error';
+                    const httpDetails = `${statusCode} ${connectivity.http_status.status_text}`;
+                    testResults.appendChild(createTestItem('HTTP Status', httpStatus, httpDetails));
+                } else {
+                    testResults.appendChild(createTestItem('HTTP Status', 'error', connectivity.http_status.error));
+                }
+            }
+
+            // Response Time
+            if (connectivity.response_time) {
+                const responseTime = connectivity.response_time.milliseconds;
+                const timeStatus = responseTime < 1000 ? 'success' : (responseTime < 3000 ? 'warning' : 'error');
+                const timeDetails = `${responseTime.toFixed(0)}ms response time`;
+                testResults.appendChild(createTestItem('Response Time', timeStatus, timeDetails));
+            }
+
+            // Overall Status
+            const overallStatus = document.getElementById('overallStatus');
+            const hasErrors = connectivity.errors && connectivity.errors.length > 0;
+            overallStatus.className = `status-indicator ${hasErrors ? 'status-error' : 'status-success'}`;
+
+            // AI Analysis
+            document.getElementById('aiContent').textContent = data.ai_analysis;
+            
+            // AI Metadata
+            const metadata = data.ai_metadata;
+            let metadataText = '';
+            if (metadata.processing_time_ms) {
+                metadataText += `⏱️ Processing time: ${metadata.processing_time_ms.toFixed(2)}ms`;
+            }
+            if (metadata.model) {
+                metadataText += ` 🤖 Model: ${metadata.model}`;
+            }
+            if (metadata.error) {
+                metadataText += ` ⚠️ ${metadata.error}`;
+            }
+            document.getElementById('aiMetadata').textContent = metadataText || 'No metadata available';
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function displayCustomResults(data) {
+            hideError();
+            
+            const connectivity = data.connectivity;
+            const testResults = document.getElementById('testResults');
+            testResults.innerHTML = '';
+
+            // Show basic connectivity info
+            if (connectivity.dns_resolution) {
+                const dnsStatus = connectivity.dns_resolution.success ? 'success' : 'error';
+                const dnsDetails = connectivity.dns_resolution.success 
+                    ? `Resolved to ${connectivity.dns_resolution.ip_address}`
+                    : connectivity.dns_resolution.error;
+                testResults.appendChild(createTestItem('DNS Resolution', dnsStatus, dnsDetails));
+            }
+
+            if (connectivity.http_status && connectivity.http_status.status_code) {
+                const statusCode = connectivity.http_status.status_code;
+                const httpStatus = statusCode < 400 ? 'success' : 'error';
+                const httpDetails = `${statusCode} ${connectivity.http_status.status_text}`;
+                testResults.appendChild(createTestItem('HTTP Status', httpStatus, httpDetails));
+            }
+
+            // Overall Status
+            const overallStatus = document.getElementById('overallStatus');
+            const hasErrors = connectivity.errors && connectivity.errors.length > 0;
+            overallStatus.className = `status-indicator ${hasErrors ? 'status-error' : 'status-success'}`;
+
+            // Custom AI Analysis
+            document.getElementById('aiContent').textContent = data.custom_ai_analysis;
+            
+            // AI Metadata
+            const metadata = data.ai_metadata;
+            let metadataText = '';
+            if (metadata.processing_time_ms) {
+                metadataText += `⏱️ Processing time: ${metadata.processing_time_ms.toFixed(2)}ms`;
+            }
+            if (metadata.model) {
+                metadataText += ` 🤖 Model: ${metadata.model}`;
+            }
+            if (metadata.error) {
+                metadataText += ` ⚠️ ${metadata.error}`;
+            }
+            document.getElementById('aiMetadata').textContent = metadataText || 'No metadata available';
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        async function analyzeURL() {
+            const url = document.getElementById('urlInput').value.trim();
+            
+            if (!url) {
+                showError('Please enter a URL to analyze');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showError(data.error || 'Analysis failed');
+                    return;
+                }
+
+                displayResults(data);
+
+            } catch (error) {
+                showError('Failed to connect to analysis service: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Allow Enter key to trigger analysis
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeURL();
+            }
+        });
+
+        // Load page with focus on input
+        window.onload = function() {
+            document.getElementById('urlInput').focus();
+        };
+    </script>
+</body>
+</html>

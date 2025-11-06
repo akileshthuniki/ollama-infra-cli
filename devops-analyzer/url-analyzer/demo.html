@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama AI API - Private Processing Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .privacy-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .prompt-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+
+        .prompt-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .examples-section {
+            margin-bottom: 30px;
+        }
+
+        .examples-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #6b7280;
+        }
+
+        .example-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .example-btn {
+            padding: 12px 16px;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .example-btn:hover {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .processing-time {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .response-text {
+            line-height: 1.6;
+            color: #374151;
+            white-space: pre-wrap;
+        }
+
+        .model-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .api-url {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Ollama AI API</h1>
+            <p class="subtitle">Private AI Processing on AWS Infrastructure</p>
+            <div class="privacy-badge">🔒 All processing happens privately</div>
+        </header>
+
+        <main class="main-content">
+            <section class="input-section">
+                <label class="prompt-label" for="prompt">Enter your prompt:</label>
+                <textarea 
+                    id="prompt" 
+                    class="prompt-textarea" 
+                    placeholder="Ask me anything... I'm here to help with analysis, explanations, creative writing, and more."
+                ></textarea>
+            </section>
+
+            <section class="examples-section">
+                <div class="examples-title">Try these examples:</div>
+                <div class="example-buttons">
+                    <button class="example-btn" onclick="setExample('Explain quantum computing in simple terms and its potential real-world applications.')">
+                        🧠 Explain Quantum Computing
+                    </button>
+                    <button class="example-btn" onclick="setExample('Write a short story about a robot discovering emotions for the first time.')">
+                        ✍️ Creative Writing Prompt
+                    </button>
+                    <button class="example-btn" onclick="setExample('What are the key differences between machine learning and deep learning? Include examples.')">
+                        💻 ML vs Deep Learning
+                    </button>
+                    <button class="example-btn" onclick="setExample('Help me understand the basics of blockchain technology and how it works.')">
+                        ⛓️ Blockchain Explained
+                    </button>
+                </div>
+            </section>
+
+            <button class="analyze-btn" onclick="analyzePrompt()">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">Analyze with AI</span>
+            </button>
+
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <h3 class="results-title">AI Response</h3>
+                    <div class="processing-time" id="processingTime"></div>
+                </div>
+                <div class="response-text" id="responseText"></div>
+                <div class="model-info" id="modelInfo"></div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+        </main>
+
+        <footer class="footer">
+            <p>Powered by Llama 3.2 running on AWS ECS with private infrastructure</p>
+            <div class="api-url" id="apiUrl">API: http://ollama-alb-427582956.us-east-1.elb.amazonaws.com</div>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://ollama-alb-427582956.us-east-1.elb.amazonaws.com';
+        
+        function setExample(text) {
+            document.getElementById('prompt').value = text;
+        }
+
+        async function analyzePrompt() {
+            const prompt = document.getElementById('prompt').value.trim();
+            const button = document.querySelector('.analyze-btn');
+            const spinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+            const resultsSection = document.getElementById('resultsSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!prompt) {
+                showError('Please enter a prompt before analyzing.');
+                return;
+            }
+
+            // Hide previous results and errors
+            resultsSection.classList.remove('active');
+            errorMessage.classList.remove('active');
+            
+            // Show loading state
+            button.disabled = true;
+            spinner.style.display = 'inline-block';
+            buttonText.textContent = 'Processing...';
+            
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                
+                const endTime = Date.now();
+                const processingTime = ((endTime - startTime) / 1000).toFixed(2);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display results
+                document.getElementById('responseText').textContent = data.response;
+                document.getElementById('processingTime').textContent = `⏱️ Processed in ${processingTime}s`;
+                document.getElementById('modelInfo').textContent = `🤖 Model: ${data.model}`;
+                
+                resultsSection.classList.add('active');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}. Make sure the API is running and accessible.`);
+            } finally {
+                // Reset button state
+                button.disabled = false;
+                spinner.style.display = 'none';
+                buttonText.textContent = 'Analyze with AI';
+            }
+        }
+        
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('active');
+        }
+        
+        // Allow Enter key to submit (Shift+Enter for new line)
+        document.getElementById('prompt').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                analyzePrompt();
+            }
+        });
+        
+        // Update API URL display if needed
+        document.getElementById('apiUrl').textContent = `API: ${API_BASE_URL}`;
+    </script>
+</body>
+</html>

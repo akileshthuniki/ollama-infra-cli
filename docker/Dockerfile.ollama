@@ -1,0 +1,26 @@
+# Custom Ollama image with models pre-loaded
+FROM ollama/ollama:latest
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
+# Create entrypoint script that pulls models on first run
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'set -e' >> /entrypoint.sh && \
+    echo 'if [ ! -f /root/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/manifest ]; then' >> /entrypoint.sh && \
+    echo '  echo "Models not found, pulling llama3.2..."' >> /entrypoint.sh && \
+    echo '  ollama serve &' >> /entrypoint.sh && \
+    echo '  sleep 10' >> /entrypoint.sh && \
+    echo '  ollama pull llama3.2' >> /entrypoint.sh && \
+    echo '  pkill ollama || true' >> /entrypoint.sh && \
+    echo '  sleep 2' >> /entrypoint.sh && \
+    echo 'fi' >> /entrypoint.sh && \
+    echo 'exec ollama serve' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
+# Expose Ollama port
+EXPOSE 11434
+
+# Use entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
+

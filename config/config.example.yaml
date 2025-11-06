@@ -1,0 +1,29 @@
+# Ollama CLI Tool Configuration File
+# Copy to config.yaml and customize for your environment
+
+# Ollama API Configuration
+ollama:
+  # URL of the Ollama server
+  url: http://localhost:11434
+  
+  # Default model to use (optional)
+  # If not specified, the CLI will use the first available model
+  default_model: llama2
+
+# AWS Configuration
+aws:
+  # AWS region for resource queries
+  region: us-east-1
+
+# General configuration
+# Request timeout in seconds (default: 300)
+timeout: 300
+
+# Retry configuration
+# Number of retry attempts for failed requests
+retry_attempts: 3
+# Initial delay between retries in seconds (exponential backoff is applied)
+retry_delay: 1
+
+# Enable debug logging (default: false)
+debug: false

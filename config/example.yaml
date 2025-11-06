@@ -1,0 +1,127 @@
+# Configuration Example
+# Copy this file to config.yaml and update with your values
+
+# Application Settings
+app:
+  name: "ollama-infra"
+  environment: "staging"  # staging, production
+  debug: false
+  port: 8080
+  host: "0.0.0.0"
+
+# AWS Configuration
+aws:
+  region: "us-east-1"
+  profile: "default"
+  
+  # S3 buckets (if needed)
+  s3:
+    artifacts_bucket: "ollama-infra-artifacts"
+    logs_bucket: "ollama-infra-logs"
+
+# Ollama Configuration
+ollama:
+  host: "http://localhost:11434"
+  model: "llama2"
+  timeout: 30
+  max_prompt_length: 4000
+  
+  # Available models
+  models:
+    - "llama2"
+    - "codellama"
+    - "mistral"
+
+# Database Configuration (if needed)
+database:
+  host: "localhost"
+  port: 5432
+  name: "ollama_infra"
+  username: "postgres"
+  # password: set via environment variable
+
+# Security Settings
+security:
+  api_key: "your-secret-api-key-here"
+  cors_origins:
+    - "http://localhost:3000"
+    - "https://your-domain.com"
+  rate_limit:
+    requests_per_minute: 60
+  
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "json"
+  file: "/var/log/ollama-infra/app.log"
+  
+# Monitoring Configuration
+monitoring:
+  health_check_interval: 30
+  metrics_enabled: true
+  prometheus_port: 9090
+  
+# DevOps Analyzer Configuration
+analyzer:
+  ollama_api_url: "http://ollama-alb-427582956.us-east-1.elb.amazonaws.com"
+  default_region: "us-east-1"
+  timeout: 15
+  retry_attempts: 3
+  
+# Infrastructure Settings
+infrastructure:
+  vpc_cidr: "10.0.0.0/16"
+  public_subnets: ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets: ["10.0.10.0/24", "10.0.20.0/24"]
+  
+  ecs:
+    instance_type: "t3.medium"
+    instance_count: 2
+    min_capacity: 1
+    max_capacity: 10
+    
+  alb:
+    ssl_policy: "ELBSecurityPolicy-2016-08"
+    idle_timeout: 60
+
+# Environment-Specific Settings
+environments:
+  staging:
+    instance_count: 1
+    instance_type: "t3.small"
+    debug: true
+    log_level: "DEBUG"
+    
+  production:
+    instance_count: 3
+    instance_type: "t3.medium"
+    debug: false
+    log_level: "INFO"
+    enable_monitoring: true
+
+# Notification Settings
+notifications:
+  slack:
+    webhook_url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+    channel: "#devops-alerts"
+    
+  email:
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    from_address: "alerts@your-domain.com"
+    # to_addresses: set via environment variable
+
+# Backup Configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  s3_bucket: "ollama-infra-backups"
+
+# Feature Flags
+features:
+  enable_metrics: true
+  enable_health_checks: true
+  enable_api_key_auth: true
+  enable_cors: true
+  enable_rate_limiting: true

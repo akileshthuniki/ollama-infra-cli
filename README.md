@@ -1,201 +1,243 @@
-# Ollama CLI Tool
+# DevOps Infrastructure Suite
 
-A simple command-line tool I built to interact with local Ollama AI models. I got tired of switching between different interfaces, so I made this to keep everything in the terminal where I spend most of my time.
+A complete DevOps toolkit with infrastructure automation, private AI services, and analysis tools.
 
-## Features
+## 🚀 Quick Start
 
-- **Infrastructure Exploration**: Query your AWS infrastructure using natural language
-- **AI-Powered Insights**: Get detailed explanations about your deployed resources
-- **AWS Infrastructure Management**: Deploy and manage AWS resources using Terraform
-- **List Models**: View available Ollama models for infrastructure exploration
-- **Flexible Input**: Support for command-line args, pipes, and interactive mode
-- **Auto Model Selection**: Intelligent model selection for infrastructure queries
-- **Verbose Mode**: Detailed JSON responses for debugging
-- **Infrastructure as Code**: Complete Terraform configuration for AWS deployment
-
-## Prerequisites
-
-- Python 3.6 or higher
-- [Ollama](https://ollama.ai/) installed and running
-- At least one model pulled (e.g., `ollama pull llama3.1`)
-
-## Getting started
-
-1. Download or clone this repo
-2. Install the one dependency:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   That's it! The requirements file is pretty minimal.
-
-## How to use it
-
-### See what models you have
-
+### Option 1: Deploy Everything
 ```bash
-python cli.py list
+# Deploy infrastructure
+./scripts/deploy.sh staging
+
+# Deploy with DevOps analyzer
+./scripts/deploy.sh staging --with-analyzer
 ```
 
-This will show all models available on your Ollama server.
-
-### Ask something
-
-#### Command Line Input
+### Option 2: Use DevOps Analyzer Only
 ```bash
-python cli.py run "What is Python?"
+cd devops-analyzer
+pip install -r requirements.txt
+python devops-analyzer.py url https://google.com
 ```
 
-#### Interactive Input
-```bash
-python cli.py run
-# It'll prompt you for input
+## 📁 Project Structure
+
+```
+├── 📄 README.md              # This file - main guide
+├── 🚀 scripts/               # Deployment and utility scripts
+│   └── deploy.sh            # Main deployment script
+├── 🏗️ infra/                 # Infrastructure as Code
+│   ├── environments/        # AWS environments (staging, production)
+│   └── modules/             # Reusable Terraform modules
+├── 🤖 src/                   # Application source code
+│   └── app.py               # Main Flask application
+├── 🔍 devops-analyzer/       # CLI analysis tools
+│   ├── devops-analyzer.py  # Main analyzer tool
+│   └── README.md           # Analyzer documentation
+├── 🐳 docker/                # Docker configurations
+└── ⚙️ config/                # Configuration files
 ```
 
-#### Pipe Input
+## 🎯 What's Included
+
+### 🏗️ **Infrastructure**
+- **AWS ECS** - Container orchestration
+- **Application Load Balancer** - Traffic distribution
+- **VPC Networking** - Secure network setup
+- **IAM Roles** - Security and permissions
+
+### 🤖 **Private AI Service**
+- **Ollama API** - Private AI inference
+- **Flask Backend** - REST API interface
+- **Docker Containers** - Containerized deployment
+
+### 🔍 **DevOps Analyzer**
+- **URL Analysis** - Check websites and services
+- **Infrastructure Analysis** - AWS health and documentation
+- **Deployment Checks** - Pre/post deployment validation
+- **AI-Powered Insights** - Smart troubleshooting
+
+### 🚀 **Deployment Tools**
+- **Automated Scripts** - One-command deployment
+- **Environment Management** - Staging/production environments
+- **Health Checks** - Post-deployment verification
+
+## 🛠️ Installation
+
+### Prerequisites
+- AWS CLI configured
+- Docker installed
+- Terraform installed
+- Python 3.7+ (for analyzer)
+
+### Quick Setup
 ```bash
-echo "Explain machine learning" | python cli.py run
-```
-This is actually pretty handy when you want to analyze files or other command outputs.
+# Clone and setup
+git clone <repository>
+cd <repository>
 
-### Advanced Options
+# Deploy infrastructure
+./scripts/deploy.sh staging
 
-#### Specify a Model
-```bash
-python cli.py run "What is Python?" --model llama3.1
-```
-
-#### Use a different server
-```bash
-python cli.py run "Hello" --base-url http://remote-server:11434
-```
-
-#### Give it more time
-```bash
-python cli.py run "Long prompt" --timeout 600
-```
-
-#### Verbose Output
-```bash
-python cli.py run "What is Python?" --verbose
-```
-This shows you the full JSON response, which is useful when things aren't working as expected.
-
-## Command Reference
-
-### `list` Command
-Lists all available models on the Ollama server.
-
-**Options:**
-- `--base-url`: Ollama server URL (default: http://localhost:11434)
-
-**Example:**
-```bash
-python cli.py list --base-url http://localhost:11434
-```
-
-### `run` Command
-Runs a prompt through a specified model.
-
-**Arguments:**
-- `prompt`: The text prompt to send to the model (optional - can be provided via stdin or interactive input)
-
-**Options:**
-- `--model`: Model name to use (default: first available model)
-- `--base-url`: Ollama server URL (default: http://localhost:11434)
-- `--timeout`: Request timeout in seconds (default: 300)
-- `--verbose`: Show full JSON response (default: false)
-
-**Examples:**
-```bash
-# Basic usage
-python cli.py run "What is Python?"
-
-# With specific model
-python cli.py run "Explain quantum computing" --model llama3.1
-
-# With verbose output
-python cli.py run "Hello" --verbose
-
-# With custom timeout
-python cli.py run "Long prompt" --timeout 600
+# Test deployment
+curl https://your-alb-url.amazonaws.com/health
 ```
 
-## Error Handling
+## 📖 Usage
 
-The tool provides helpful error messages for common issues:
-
-- **Connection Error**: "Cannot connect to Ollama. Is it running? (Try: ollama serve)"
-- **No Models**: "No models found. Try: ollama pull llama3.1"
-- **Model Not Found**: "Model 'modelname' not found. Run 'list' or pull the model."
-- **Timeout**: "Request timed out after X seconds."
-
-The goal is to tell you what's wrong and how to fix it, not just throw an error at you.
-
-### Basic Workflow
+### Deploy Infrastructure
 ```bash
-# 1. Check what models are available
-python cli.py list
+# Deploy to staging
+./scripts/deploy.sh staging
 
-# 2. Run a simple prompt
-python cli.py run "What is machine learning?"
+# Deploy to production
+./scripts/deploy.sh production
 
-# 3. Be specific about which model
-python cli.py run "Explain Python" --model llama3.1
+# Deploy with analyzer
+./scripts/deploy.sh staging --with-analyzer
 ```
 
-### Advanced Usage
+### Use DevOps Analyzer
 ```bash
-# Analyze a file
-cat my_questions.txt | python cli.py run
+cd devops-analyzer
 
-# Use with different server
-python cli.py run "Hello" --base-url http://192.168.1.100:11434
+# URL analysis
+python devops-analyzer.py url https://your-service.com --question "Why is this slow?"
 
-# Debug mode to see full responses
-python cli.py run "Test" --verbose
+# Infrastructure analysis
+python devops-analyzer.py infrastructure --type architecture --cluster your-cluster
+
+# Deployment checks
+python devops-analyzer.py deploy --action pre-check --cluster your-cluster
 ```
 
-## Troubleshooting
+### API Usage
+```bash
+# Health check
+curl https://your-alb-url.amazonaws.com/health
+
+# AI analysis
+curl -X POST https://your-alb-url.amazonaws.com/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Analyze this infrastructure"}'
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+# AWS Configuration
+export AWS_REGION="us-east-1"
+export AWS_PROFILE="default"
+
+# Application Configuration
+export OLLAMA_MODEL="llama2"
+export API_PORT="8080"
+```
+
+### Config Files
+- `config/staging.yaml` - Staging environment settings
+- `config/production.yaml` - Production environment settings
+- `infra/environments/staging/terraform.tfvars` - Terraform variables
+
+## 🚨 Troubleshooting
 
 ### Common Issues
 
-1. **"Cannot connect to Ollama"**
-   - Make sure Ollama is running: `ollama serve`
-   - Check if the server URL is correct
-
-2. **"No models found"**
-   - You need to pull a model first: `ollama pull llama3.1`
-   - Or check what you have: `ollama list`
-
-3. **"Model not found"**
-   - Check what models you actually have: `python cli.py list`
-   - Pull the model you want: `ollama pull model-name`
-
-4. **Request timeouts**
-   - Increase timeout: `--timeout 600`
-   - Try a simpler prompt
-   - Check server performance
-
-### Getting Help
-
-Run any command with `--help` to see detailed usage information:
+**Deployment fails?**
 ```bash
-python cli.py --help
-python cli.py list --help
-python cli.py run --help
+# Check AWS credentials
+aws sts get-caller-identity
+
+# Check Terraform state
+cd infra/environments/staging
+terraform plan
 ```
 
-## Development
+**Service not responding?**
+```bash
+# Check logs
+aws logs tail /ecs/ollama-api --follow
 
-### Project Structure
+# Check service health
+./scripts/health-check.sh staging
 ```
-├── cli.py          # Main CLI application
-├── requirements.txt # Python dependencies
-└── README.md       # This file
+
+**Analyzer not working?**
+```bash
+# Test without AI
+cd devops-analyzer
+python devops-analyzer.py url https://google.com --no-ai
+
+# Check API access
+curl -I http://your-ollama-api:11434/api/tags
 ```
 
-### Dependencies
-- `requests`: HTTP client for API calls
-- `argparse`: Command-line argument parsing
+## 📊 Monitoring
 
-The code is pretty straightforward if you want to poke around or modify it. The main logic is in `cli.py` and it's not too complicated.
+### Health Checks
+```bash
+# Infrastructure health
+./scripts/health-check.sh staging
+
+# Service health
+curl https://your-alb-url.amazonaws.com/health
+
+# Analyzer health
+cd devops-analyzer
+python devops-analyzer.py infrastructure --type health --cluster staging
+```
+
+### Logs
+```bash
+# Application logs
+aws logs tail /ecs/ollama-api --follow
+
+# Deployment logs
+./scripts/deploy.sh staging --dry-run
+```
+
+## 🔄 CI/CD Integration
+
+### GitHub Actions
+```yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy to staging
+        run: ./scripts/deploy.sh staging
+      - name: Run analyzer
+        run: |
+          cd devops-analyzer
+          python devops-analyzer.py deploy --action post-check --cluster staging
+```
+
+## 📚 Documentation
+
+- **[Infrastructure Guide](./infra/README.md)** - Detailed infrastructure setup
+- **[Application Guide](./src/README.md)** - Application development and API
+- **[Analyzer Guide](./devops-analyzer/README.md)** - DevOps analyzer usage
+- **[Deployment Guide](./scripts/README.md)** - Deployment scripts and automation
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Make your changes
+4. Test with `./scripts/deploy.sh staging --dry-run`
+5. Submit pull request
+
+## 📄 License
+
+Private project - internal use only.
+
+---
+
+**Ready to automate your DevOps workflow! 🚀**
