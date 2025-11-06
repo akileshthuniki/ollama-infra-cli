@@ -32,7 +32,7 @@ devops-analyzer/
 ├── requirements.txt      # Dependencies
 ├── README.md            # This file
 ├── INSTALL.md           # Setup help
-├── EXAMPLES.md          # Real examples
+├── DEVOPS_DAILY_SCENARIOS.md  # Real-world scenarios
 ├── url-analyzer/        # Old web stuff (optional)
 └── docs/                # Your saved reports
 ```
@@ -132,7 +132,7 @@ python devops-analyzer.py url https://google.com --no-ai
 
 ### More Examples
 
-See **EXAMPLES.md** for real-world scenarios and scripts.
+See **DEVOPS_DAILY_SCENARIOS.md** for real-world scenarios and scripts.
 
 ---
 
